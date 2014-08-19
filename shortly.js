@@ -4,7 +4,8 @@ var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var bcrypt = require('bcrypt-nodejs');
 var Promise = require('bluebird');
-
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -23,11 +24,30 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+app.use(cookieParser('what is a secret?'));
+app.use(session({secret: 'also what is a secret',
+                  saveUninitialized: true,
+                  resave: true}));
 
+function restrict(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    req.session.error = 'Access denied!';
+    res.redirect('/login');
+  }
+}
 
-app.get('/',
+app.get('/', restrict,
 function(req, res) {
   res.render('index');
+  // res.send('This is the restricted area! Hello ' + req.session.user + '! click <a href="/logout">here to logout</a>');
+});
+
+app.get('/logout', function(request, response){
+    request.session.destroy(function(){
+        response.redirect('/login');
+    });
 });
 
 app.get('/create',
@@ -83,8 +103,11 @@ function(req, res) {
 
 app.get('/login',
 function(req, res) {
+  console.log('Cookies: ', req.cookies);
   res.render('login');
 });
+
+
 
 
 app.post('/login',
@@ -93,7 +116,22 @@ function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  util.checkUserPass(username, password, res);
+  new User({'username': username})
+        .fetch()
+        .then(function(user) {
+          var hash = user.get('password');
+          bcrypt.compare(password, hash, function(err, result) {
+            if(result){
+              req.session.regenerate(function(){
+                req.session.user = username;
+                res.redirect('/');
+              });
+              // response.render('index');
+            }else{
+              res.redirect('/signup');
+            }
+          });
+        });
 
 });
 
