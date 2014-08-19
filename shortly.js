@@ -33,32 +33,6 @@ function(req, res) {
   res.render('index');
 });
 
-app.get('/login',
-function(req, res) {
-  res.render('login');
-});
-
-
-app.post('/login',
-function(req, res) {
-  // give session token;
-  res.render('index');
-});
-
-app.get('/signup',
-function(req, res) {
-  res.render('signup');
-});
-
-app.post('/signup',
-function(req, res) {
-  var username = req.body.username;
-  var password = req.body.password;
-  if(!util.checkForUser(username)){
-    console.log('user not found');
-  }
-  res.render('signup');
-});
 
 app.get('/links',
 function(req, res) {
@@ -105,6 +79,49 @@ function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 
+app.get('/login',
+function(req, res) {
+  res.render('login');
+});
+
+
+app.post('/login',
+function(req, res) {
+  // check if user is in database
+  var username = req.body.username;
+  var password = req.body.password;
+
+  new User({ username: username, password: password }).fetch().then(function(found) {
+    if (found) {
+      console.log('found user!')
+      res.send(200, found.attributes);
+    } else {
+      console.log('no user found!');
+      res.send(200, 'no user found!');
+    }
+  });
+  // give session token;
+  res.render('index');
+});
+
+app.get('/signup',
+function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup',
+function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  var user = new User({ username: username, password: password });
+
+  user.save().then(function(newUser) {
+    console.log('user saved!', newUser);
+    res.render('index');
+  });
+
+});
 
 
 /************************************************************/
