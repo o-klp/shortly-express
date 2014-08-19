@@ -2,6 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var Promise = require('bluebird');
 
 
 var db = require('./app/config');
@@ -91,14 +92,18 @@ function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  new User({ username: username, password: password }).fetch().then(function(found) {
-    if (found) {
-      console.log('found user!')
-      res.send(200, found.attributes);
-    } else {
-      console.log('no user found!');
-      res.send(200, 'no user found!');
-    }
+  Promise.promisify(util.hashPassword)(password).then(function(hash){
+    console.log('hash ees ', hash);
+    new User({ username: username, password: hash }).fetch().then(function(found) {
+      console.log('found.attr: ', found.attributes);
+      if (found) {
+        console.log('found user!');
+        res.send(200, found.attributes);
+      } else {
+        console.log('no user found!');
+        res.send(200, 'no user found!');
+      }
+    });
   });
   // give session token;
   res.render('index');
