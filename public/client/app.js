@@ -29,7 +29,7 @@ window.Shortly = Backbone.View.extend({
 
   logUserOut: function(e){
     e && e.preventDefault();
-    this.router.navigate('/', { trigger: true });
+    window.location = "http://127.0.0.1:3000/logout";
   },
 
   renderCreateView: function(e){
@@ -43,4 +43,5 @@ window.Shortly = Backbone.View.extend({
       .filter('.' + routeName)
       .addClass('selected');
   }
+
 });
