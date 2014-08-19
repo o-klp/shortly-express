@@ -41,7 +41,6 @@ function restrict(req, res, next) {
 app.get('/', restrict,
 function(req, res) {
   res.render('index');
-  // res.send('This is the restricted area! Hello ' + req.session.user + '! click <a href="/logout">here to logout</a>');
 });
 
 app.get('/logout', function(request, response){
@@ -103,7 +102,6 @@ function(req, res) {
 
 app.get('/login',
 function(req, res) {
-  console.log('Cookies: ', req.cookies);
   res.render('login');
 });
 
@@ -126,13 +124,11 @@ function(req, res) {
                 req.session.user = username;
                 res.redirect('/');
               });
-              // response.render('index');
             }else{
               res.redirect('/signup');
             }
           });
         });
-
 });
 
 app.get('/signup',
@@ -182,6 +178,5 @@ app.get('/*', function(req, res) {
   });
 });
 
-console.log('Shortly is listening on 4568');
-// app.listen(4568);
+console.log('Shortly is listening on 3000');
 app.listen(3000);
