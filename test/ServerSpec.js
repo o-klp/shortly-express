@@ -13,7 +13,7 @@ var Link = require('../app/models/link');
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
 /************************************************************/
-var xbeforeEach = function(){};
+var beforeEach = function(){};
 /************************************************************/
 
 
@@ -40,10 +40,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
 
     // delete user Phillip from db so it can be created later for the test
@@ -52,10 +52,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
   });
 
@@ -63,7 +63,7 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    xbeforeEach(function(done){      // create a user that we can then log-in with
+    beforeEach(function(done){      // create a user that we can then log-in with
       new User({
           'username': 'Phillip',
           'password': 'Phillip'
@@ -160,7 +160,10 @@ describe('', function() {
           title: 'Rofl Zoo - Daily funny animal pictures',
           base_url: 'http://127.0.0.1:4568'
         });
-        link.save().then(function(){
+
+        console.log('inside beforeEach');
+
+        link.save().then(function(newLink){
           done();
         });
       });
@@ -174,9 +177,15 @@ describe('', function() {
             'url': 'http://www.roflzoo.com/'
           }
         };
+        // console.log('DONE: ', done);
 
         requestWithSession(options, function(error, res, body) {
+          // console.log('error: ', error);
+          // console.log('res: ', res);
+          // console.log('body: ', body);
+          // console.log("LINK _ ", link); // => returns undefined;
           var code = res.body.code;
+          // console.log('code: ', code);
           expect(code).to.equal(link.get('code'));
           done();
         });
