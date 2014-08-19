@@ -38,8 +38,25 @@ function(req, res) {
   res.render('login');
 });
 
+
+app.post('/login',
+function(req, res) {
+  // give session token;
+  res.render('index');
+});
+
 app.get('/signup',
 function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup',
+function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  if(!util.checkForUser(username)){
+    console.log('user not found');
+  }
   res.render('signup');
 });
 
@@ -120,4 +137,4 @@ app.get('/*', function(req, res) {
 
 console.log('Shortly is listening on 4568');
 // app.listen(4568);
-app.listen(8080);
+app.listen(3000);
