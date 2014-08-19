@@ -92,16 +92,7 @@ function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  new User({'username': username})
-        .fetch()
-        .then(function(user) {
-          hash = user.get('password');
-
-          bcrypt.compare(password, hash, function(err, res) {
-            console.log("Result: ", res);
-            // if true give session token
-          });
-        });
+  util.checkUserPass(username, password);
 
   res.render('index');
 });
