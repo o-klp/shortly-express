@@ -23,22 +23,15 @@ app.use(partials());
 app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(express.static(__dirname + '/public'));
 app.use(cookieParser('what is a secret?'));
 app.use(session({secret: 'also what is a secret',
                   saveUninitialized: true,
                   resave: true}));
 
-function restrict(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    req.session.error = 'Access denied!';
-    res.redirect('/login');
-  }
-}
 
-app.get('/', restrict,
+app.get('/', util.restrict,
 function(req, res) {
   res.render('index');
 });
