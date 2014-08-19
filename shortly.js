@@ -48,7 +48,7 @@ function(req, res) {
 });
 
 
-app.get('/links',
+app.get('/links', util.restrict,
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
@@ -98,30 +98,22 @@ function(req, res) {
   res.render('login');
 });
 
-
-
-
 app.post('/login',
 function(req, res) {
   // check if user is in database
   var username = req.body.username;
   var password = req.body.password;
 
-  new User({'username': username})
-        .fetch()
-        .then(function(user) {
-          var hash = user.get('password');
-          bcrypt.compare(password, hash, function(err, result) {
-            if(result){
-              req.session.regenerate(function(){
-                req.session.user = username;
-                res.redirect('/');
-              });
-            }else{
-              res.redirect('/signup');
-            }
-          });
-        });
+  var queryUser = new User({'username': username});
+  queryUser.fetch()
+    .then(function(user) {
+      if(user){
+        user.comparePassword(password, req, res);
+      } else {
+        console.log('user doesnt exist');
+        res.redirect('/login');
+      }
+    });
 });
 
 app.get('/signup',
