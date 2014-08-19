@@ -7,9 +7,11 @@ var User = db.Model.extend({
 
   hashThis: function() {
     // hashes password but does not salt (first null is salt)
-    return Promise.promisify(bcrypt.hash)(this.password, null, null)
+    console.log("when initializing, pw is ", this.get('password'));
+    return Promise.promisify(bcrypt.hash)(this.get('password'), null, null)
                   .bind(this)
                   .then(function(hash) {
+                    console.log("saved password as ", hash);
                     this.set('password', hash);
                   });
   },
