@@ -3,6 +3,7 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var bcrypt = require('bcrypt-nodejs');
+var Promise = require('bluebird');
 
 
 var db = require('./app/config');
@@ -92,9 +93,8 @@ function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  util.checkUserPass(username, password);
+  util.checkUserPass(username, password, res);
 
-  res.render('index');
 });
 
 app.get('/signup',
