@@ -32,7 +32,7 @@ var User = db.Model.extend({
           res.redirect('/');
         });
       }else{
-        res.redirect('/signup');
+        res.redirect('/login');
       }
     });
   },

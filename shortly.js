@@ -85,7 +85,7 @@ function(req, res) {
 
 app.get('/login',
 function(req, res) {
-  res.render('login');
+  res.render('login', {errorMsg: ""});
 });
 
 app.post('/login',
@@ -100,15 +100,14 @@ function(req, res) {
       if(user){
         user.comparePassword(password, req, res);
       } else {
-        console.log('user doesnt exist');
-        res.redirect('/login');
+        res.render('signup', {errorMsg: 'User not found in database'});
       }
     });
 });
 
 app.get('/signup',
 function(req, res) {
-  res.render('signup');
+  res.render('signup', {errorMsg: ''});
 });
 
 app.post('/signup',
