@@ -2,8 +2,6 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
-var bcrypt = require('bcrypt-nodejs');
-var Promise = require('bluebird');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
@@ -30,23 +28,15 @@ app.use(session({secret: 'also what is a secret',
                   saveUninitialized: true,
                   resave: true}));
 
-
 app.get('/', util.restrict,
 function(req, res) {
   res.render('index');
 });
 
-app.get('/logout', function(request, response){
-    request.session.destroy(function(){
-        response.redirect('/login');
-    });
-});
-
-app.get('/create',
+app.get('/create', util.restrict,
 function(req, res) {
   res.render('index');
 });
-
 
 app.get('/links', util.restrict,
 function(req, res) {
@@ -55,7 +45,7 @@ function(req, res) {
   });
 });
 
-app.post('/links',
+app.post('/links', util.restrict,
 function(req, res) {
   var uri = req.body.url;
 
@@ -125,13 +115,17 @@ app.post('/signup',
 function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
-
   var user = new User({ username: username, password: password });
 
   user.save().then(function(newUser) {
     res.render('index');
   });
+});
 
+app.get('/logout', function(request, response){
+    request.session.destroy(function(){
+        response.redirect('/login');
+    });
 });
 
 
